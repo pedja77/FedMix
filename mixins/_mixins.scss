@@ -1,0 +1,77 @@
+/// Helper mixin koji dodaje wendor prefikse zeljenom
+/// propertiju kao i vrednost. Dodaje samo "standardne"
+/// prefikse -moz, -webkit ... Moguce je dodati sadrzaj u
+/// mixin ako je potrebno.
+///
+/// @group shorthand
+/// @author Pedja Smigeljski
+///
+/// @param {Property} $property - Properti kojem zelimo dodati prefikse
+/// @param {Value} $value - Vrednost prefiksovanog propertija
+/// @output `Properti` sa dodeljenim `prefiksima` i vrednoscu
+///
+/// @example scss - Prefixing `box-size`
+///   @include wendorPrefixes(box-size, border-box);
+@mixin wendorPrefixes($property, $value) {
+    -webkit-#{$property}: #{$value};
+    -moz-#{$property}: #{$value};
+    -o-#{$property}: #{$value};
+    -ms-#{$property}: #{$value};
+    #{$property}: #{$value};
+    @content;
+}
+
+/// Precica za resenje problema sa plutajucim
+/// kontejnerima
+///
+/// @group shorthand
+/// @example scss - Dodaje `clear fix` na kraj `float` bloka
+///   @include clrFix;
+@mixin clrFix {
+    &:before,
+    &:after {
+        content: "";
+        display: block;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+/// Apsolutno pozicioniranje elementa unutar roditeljskog
+/// kontejnera, koji je li, mora imati position: relative.
+///
+/// @group shorthand
+/// @author Nepoznat, modifikovao Pedja Smigeljski
+///
+/// @param {String} $position - jedno od [vertical, horizontal, both]
+/// @param {Value} $offsetLeft [50%] - udaljenost od leve ivice kontejnera
+/// @param {Value} $offsetTop [50%] - udaljenost od gornje ivice kontejnera
+///
+/// @example scss - Precizno centriranje elementa unutar roditelja
+///   @include center(both);
+@mixin center($position, $offsetLeft: 50%, $offsetTop: 50%) {
+    position: absolute;
+    @if $position=='vertical' {
+        top: $offsetTop;
+        @include wendorPrefixes(transform, translateY(-50%));
+        // -webkit-transform: translateY(-50%);
+        // -ms-transform: translateY(-50%);
+        // transform: translateY(-50%);
+    }
+    @else if $position=='horizontal' {
+        left: $offsetLeft;
+        @include wendorPrefixes(transform, translateX(-50%));
+        // -webkit-transform: translateX(-50%);
+        // -ms-transform: translateX(-50%);
+        // transform: translate(-50%);
+    }
+    @else if $position=='both' {
+        top: $offsetTop;
+        left: $offsetLeft;
+        @include wendorPrefixes(transform, translate(-50%, -50%));
+        // -webkit-transform: translate(-50%, -50%);
+        // -ms-transform: translate(-50%, -50%);
+        // transform: translate(-50%, -50%);
+    }
+}
